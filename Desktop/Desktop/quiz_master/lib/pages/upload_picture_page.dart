@@ -21,21 +21,17 @@ class _UploadPicturePageState extends State<UploadPicturePage> {
   Future<void> testFirebaseUpload(File imageFile) async {
     try {
       String fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
-      Reference storageRef = FirebaseStorage.instance.ref().child(
-            'test/$fileName',
-          );
+      Reference storageRef =
+          FirebaseStorage.instance.ref().child('test/$fileName');
       UploadTask uploadTask = storageRef.putFile(imageFile);
 
-      uploadTask.snapshotEvents.listen(
-        (TaskSnapshot snapshot) {
-          double progress =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          print("Upload progress: ${progress.toStringAsFixed(2)}%");
-        },
-        onError: (error) {
-          print("Upload error during progress: $error");
-        },
-      );
+      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+        double progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        print("Upload progress: ${progress.toStringAsFixed(2)}%");
+      }, onError: (error) {
+        print("Upload error during progress: $error");
+      });
 
       TaskSnapshot snapshot = await uploadTask;
       String downloadUrl = await snapshot.ref.getDownloadURL();
@@ -55,6 +51,8 @@ class _UploadPicturePageState extends State<UploadPicturePage> {
       setState(() {
         _imageFile = File(pickedFile.path);
       });
+      print("Picked image path: ${_imageFile!.path}");
+      print("File exists: ${_imageFile!.existsSync()}");
     }
   }
 
@@ -67,6 +65,8 @@ class _UploadPicturePageState extends State<UploadPicturePage> {
       setState(() {
         _imageFile = File(pickedFile.path);
       });
+      print("Picked image path: ${_imageFile!.path}");
+      print("File exists: ${_imageFile!.existsSync()}");
     }
   }
 
@@ -79,24 +79,22 @@ class _UploadPicturePageState extends State<UploadPicturePage> {
 
     try {
       String fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
-      Reference storageRef = FirebaseStorage.instance.ref().child(
-            'winners/$fileName',
-          );
+      Reference storageRef =
+          FirebaseStorage.instance.ref().child('winners/$fileName');
 
-      final metadata = SettableMetadata(contentType: 'image/jpeg');
+      final metadata = SettableMetadata(
+        contentType: 'image/jpeg',
+      );
 
       UploadTask uploadTask = storageRef.putFile(_imageFile!, metadata);
 
-      uploadTask.snapshotEvents.listen(
-        (TaskSnapshot snapshot) {
-          double progress =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          print("Upload progress: ${progress.toStringAsFixed(2)}%");
-        },
-        onError: (error) {
-          print("Upload error during progress: $error");
-        },
-      );
+      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+        double progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        print("Upload progress: ${progress.toStringAsFixed(2)}%");
+      }, onError: (error) {
+        print("Upload error during progress: $error");
+      });
 
       TaskSnapshot snapshot = await uploadTask;
       String downloadUrl = await snapshot.ref.getDownloadURL();
@@ -115,9 +113,9 @@ class _UploadPicturePageState extends State<UploadPicturePage> {
     } catch (e, s) {
       print("Error during upload: $e");
       print("Stack trace: $s");
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error uploading image: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error uploading image: $e')),
+      );
     } finally {
       setState(() {
         _uploading = false;
@@ -128,7 +126,9 @@ class _UploadPicturePageState extends State<UploadPicturePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Upload Winner Picture')),
+      appBar: AppBar(
+        title: const Text('Upload Winner Picture'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -140,8 +140,13 @@ class _UploadPicturePageState extends State<UploadPicturePage> {
             ),
             const SizedBox(height: 20),
             _imageFile != null
-                ? Image.file(_imageFile!, height: 300)
-                : const Placeholder(fallbackHeight: 300),
+                ? Image.file(
+                    _imageFile!,
+                    height: 300,
+                  )
+                : const Placeholder(
+                    fallbackHeight: 300,
+                  ),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

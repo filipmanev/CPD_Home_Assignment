@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "1008101041805",
     "project_id": "quiz-master-f95be",
-    "storage_bucket": "quiz-master-f95be.firebasestorage.app"
+    "storage_bucket": "gs://quiz-master-f95be.firebasestorage.app"
   },
   "client": [
     {

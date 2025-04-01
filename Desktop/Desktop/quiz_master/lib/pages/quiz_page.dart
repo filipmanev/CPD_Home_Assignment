@@ -48,8 +48,8 @@ class _QuizPageState extends State<QuizPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder:
-                (context) => ResultPage(score: score, total: questions.length),
+            builder: (context) =>
+                ResultPage(score: score, total: questions.length),
           ),
         );
       }
@@ -68,15 +68,11 @@ class _QuizPageState extends State<QuizPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Question ${currentQuestionIndex + 1}/${questions.length}',
-              style: const TextStyle(fontSize: 20),
-            ),
+            Text('Question ${currentQuestionIndex + 1}/${questions.length}',
+                style: const TextStyle(fontSize: 20)),
             const SizedBox(height: 20),
-            Text(
-              currentQuestion['question'],
-              style: const TextStyle(fontSize: 24),
-            ),
+            Text(currentQuestion['question'],
+                style: const TextStyle(fontSize: 24)),
             const SizedBox(height: 20),
             ...options.asMap().entries.map((entry) {
               int idx = entry.key;

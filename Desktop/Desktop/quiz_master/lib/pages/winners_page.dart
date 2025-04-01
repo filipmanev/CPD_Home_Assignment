@@ -7,13 +7,14 @@ class WinnersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Winners')),
+      appBar: AppBar(
+        title: const Text('Winners'),
+      ),
       body: StreamBuilder<QuerySnapshot>(
-        stream:
-            FirebaseFirestore.instance
-                .collection('winners')
-                .orderBy('timestamp', descending: true)
-                .snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('winners')
+            .orderBy('timestamp', descending: true)
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return const Center(child: Text('Error loading winners'));
@@ -32,15 +33,10 @@ class WinnersPage extends StatelessWidget {
               String name = winnerData['name'] ?? 'No Name';
               String imageUrl = winnerData['imageUrl'] ?? '';
               return ListTile(
-                leading:
-                    imageUrl.isNotEmpty
-                        ? Image.network(
-                          imageUrl,
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
-                        )
-                        : const Icon(Icons.image),
+                leading: imageUrl.isNotEmpty
+                    ? Image.network(imageUrl,
+                        width: 50, height: 50, fit: BoxFit.cover)
+                    : const Icon(Icons.image),
                 title: Text(name),
               );
             },

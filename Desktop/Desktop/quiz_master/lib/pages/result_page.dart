@@ -28,7 +28,7 @@ class ResultPage extends StatelessWidget {
                 );
               },
               child: const Text('Return Home'),
-            ),
+            )
           ],
         ),
       ),
