@@ -4,7 +4,7 @@ import 'upload_picture_page.dart';
 
 class QuizPage extends StatefulWidget {
   final String userName;
-  QuizPage({required this.userName});
+  const QuizPage({super.key, required this.userName});
 
   @override
   _QuizPageState createState() => _QuizPageState();
@@ -48,8 +48,8 @@ class _QuizPageState extends State<QuizPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                ResultPage(score: score, total: questions.length),
+            builder:
+                (context) => ResultPage(score: score, total: questions.length),
           ),
         );
       }
@@ -62,29 +62,34 @@ class _QuizPageState extends State<QuizPage> {
     List<dynamic> options = currentQuestion['options'];
 
     return Scaffold(
-      appBar: AppBar(title: Text('Quiz')),
+      appBar: AppBar(title: const Text('Quiz')),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Question ${currentQuestionIndex + 1}/${questions.length}',
-                style: TextStyle(fontSize: 20)),
-            SizedBox(height: 20),
-            Text(currentQuestion['question'], style: TextStyle(fontSize: 24)),
-            SizedBox(height: 20),
+            Text(
+              'Question ${currentQuestionIndex + 1}/${questions.length}',
+              style: const TextStyle(fontSize: 20),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              currentQuestion['question'],
+              style: const TextStyle(fontSize: 24),
+            ),
+            const SizedBox(height: 20),
             ...options.asMap().entries.map((entry) {
               int idx = entry.key;
               String option = entry.value;
               return Container(
-                margin: EdgeInsets.symmetric(vertical: 8),
+                margin: const EdgeInsets.symmetric(vertical: 8),
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () => answerQuestion(idx),
                   child: Text(option),
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),

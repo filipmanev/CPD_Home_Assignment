@@ -7,7 +7,7 @@ import 'winners_page.dart';
 
 class UploadPicturePage extends StatefulWidget {
   final String userName;
-  UploadPicturePage({required this.userName});
+  const UploadPicturePage({super.key, required this.userName});
 
   @override
   _UploadPicturePageState createState() => _UploadPicturePageState();
@@ -17,6 +17,34 @@ class _UploadPicturePageState extends State<UploadPicturePage> {
   File? _imageFile;
   bool _uploading = false;
   final ImagePicker _picker = ImagePicker();
+
+  Future<void> testFirebaseUpload(File imageFile) async {
+    try {
+      String fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
+      Reference storageRef = FirebaseStorage.instance.ref().child(
+            'test/$fileName',
+          );
+      UploadTask uploadTask = storageRef.putFile(imageFile);
+
+      uploadTask.snapshotEvents.listen(
+        (TaskSnapshot snapshot) {
+          double progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          print("Upload progress: ${progress.toStringAsFixed(2)}%");
+        },
+        onError: (error) {
+          print("Upload error during progress: $error");
+        },
+      );
+
+      TaskSnapshot snapshot = await uploadTask;
+      String downloadUrl = await snapshot.ref.getDownloadURL();
+      print("Upload complete. URL: $downloadUrl");
+    } catch (e, s) {
+      print("Error during test upload: $e");
+      print("Stack trace: $s");
+    }
+  }
 
   Future<void> _takePicture() async {
     final XFile? pickedFile = await _picker.pickImage(
@@ -49,26 +77,30 @@ class _UploadPicturePageState extends State<UploadPicturePage> {
       _uploading = true;
     });
 
-
-    //bruh
     try {
       String fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
-      Reference storageRef =
-          FirebaseStorage.instance.ref().child('winners/$fileName');
+      Reference storageRef = FirebaseStorage.instance.ref().child(
+            'winners/$fileName',
+          );
 
-      UploadTask uploadTask = storageRef.putFile(_imageFile!);
+      final metadata = SettableMetadata(contentType: 'image/jpeg');
 
-      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-        double progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        print("Upload progress: ${progress.toStringAsFixed(2)}%");
-      }, onError: (error) {
-        print("Upload error: $error");
-      });
+      UploadTask uploadTask = storageRef.putFile(_imageFile!, metadata);
 
-      //upload bs
+      uploadTask.snapshotEvents.listen(
+        (TaskSnapshot snapshot) {
+          double progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          print("Upload progress: ${progress.toStringAsFixed(2)}%");
+        },
+        onError: (error) {
+          print("Upload error during progress: $error");
+        },
+      );
+
       TaskSnapshot snapshot = await uploadTask;
       String downloadUrl = await snapshot.ref.getDownloadURL();
+      print("Upload complete. File URL: $downloadUrl");
 
       await FirebaseFirestore.instance.collection('winners').add({
         'name': widget.userName,
@@ -78,13 +110,14 @@ class _UploadPicturePageState extends State<UploadPicturePage> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => WinnersPage()),
+        MaterialPageRoute(builder: (context) => const WinnersPage()),
       );
-    } catch (e) {
+    } catch (e, s) {
       print("Error during upload: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error uploading image: $e')),
-      );
+      print("Stack trace: $s");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error uploading image: $e')));
     } finally {
       setState(() {
         _uploading = false;
@@ -95,49 +128,43 @@ class _UploadPicturePageState extends State<UploadPicturePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Upload Winner Picture'),
-      ),
+      appBar: AppBar(title: const Text('Upload Winner Picture')),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Text(
               'Congrats ${widget.userName}! You got all questions right.',
-              style: TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 20),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _imageFile != null
-                ? Image.file(
-                    _imageFile!,
-                    height: 300,
-                  )
-                : Placeholder(
-                    fallbackHeight: 300,
-                  ),
-            SizedBox(height: 20),
+                ? Image.file(_imageFile!, height: 300)
+                : const Placeholder(fallbackHeight: 300),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
                   onPressed: _takePicture,
-                  child: Text('Take Picture'),
+                  child: const Text('Take Picture'),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 ElevatedButton(
                   onPressed: _pickFromGallery,
-                  child: Text('Choose from Gallery'),
+                  child: const Text('Choose from Gallery'),
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _uploading
-                ? CircularProgressIndicator()
+                ? const CircularProgressIndicator()
                 : ElevatedButton(
                     onPressed: _uploadPicture,
-                    child: Text('Upload Picture'),
+                    child: const Text('Upload Picture'),
                   ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
